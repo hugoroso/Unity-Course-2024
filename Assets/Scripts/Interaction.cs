@@ -8,7 +8,8 @@ public class Interaction : MonoBehaviour
     private PlayerInput _playerInput;
     private Transform _transform;
 
-    [SerializeField] private Transform _crossHairTrans;
+    [SerializeField] private Transform crossHairTrans;
+    [SerializeField] private LayerMask interactableLayer;
     
     private void Awake()
     {
@@ -27,8 +28,17 @@ public class Interaction : MonoBehaviour
 
     private void OnInteractP(InputAction.CallbackContext callbackContext)
     {
-        Debug.Log("Interact");
-        //raycast
-        Physics.Raycast(_crossHairTrans.position, _transform.forward, out var hit, 1.5f);
+        //raycast if didn't hit exit function
+        if(!Physics.Raycast(crossHairTrans.position, crossHairTrans.forward, out var hit, 2.5f,interactableLayer)) return;
+        
+        if(!hit.transform.TryGetComponent(out InteractableObject interactible)) return;
+        interactible.Interact();
+        
+        Debug.Log("I hit: " + hit.transform.gameObject.name);
+    }
+
+    void Update()
+    {
+        Debug.DrawRay(crossHairTrans.position, crossHairTrans.forward, Color.red);
     }
 }
